@@ -1,3 +1,4 @@
+require("@nomicfoundation/hardhat-foundry");
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-verify';
 import '@nomicfoundation/hardhat-toolbox';
