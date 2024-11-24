@@ -45,6 +45,7 @@ contract EntityForging is IEntityForging, ReentrancyGuard, Ownable, Pausable {
     minimumListFee = _fee;
   }
 
+  // ISSUE - [07] Uninitialized/unbounded issue in fetchListings
   function fetchListings() external view returns (Listing[] memory _listings) {
     _listings = new Listing[](listingCount + 1);
     for (uint256 i = 1; i <= listingCount; ++i) {
@@ -64,6 +65,7 @@ contract EntityForging is IEntityForging, ReentrancyGuard, Ownable, Pausable {
     return listings[id];
   }
 
+  //https://github.com/code-423n4/2024-07-traitforge-findings/issues/211
   function listForForging(
     uint256 tokenId,
     uint256 fee
@@ -99,6 +101,8 @@ contract EntityForging is IEntityForging, ReentrancyGuard, Ownable, Pausable {
     emit ListedForForging(tokenId, fee);
   }
 
+  //https://github.com/code-423n4/2024-07-traitforge-findings/issues/221
+  //https://github.com/code-423n4/2024-07-traitforge-findings/issues/41
   function forgeWithListed(
     uint256 forgerTokenId,
     uint256 mergerTokenId
@@ -142,7 +146,6 @@ contract EntityForging is IEntityForging, ReentrancyGuard, Ownable, Pausable {
         forgingCounts[mergerTokenId] <= mergerForgePotential,
       'forgePotential insufficient'
     );
-
     uint256 devFee = forgingFee / taxCut;
     uint256 forgerShare = forgingFee - devFee;
     address payable forgerOwner = payable(nftContract.ownerOf(forgerTokenId));
