@@ -202,8 +202,20 @@ contract EntropyGenerator is IEntropyGenerator, Ownable, Pausable {
     return number;
   }
 
+  modifier onlyAllowedCallerOrOwner() {
+    require(
+      msg.sender == allowedCaller || msg.sender == owner(),
+      'Caller is not allowed'
+    );
+    _;
+  }
+
   //select index points for 999999, triggered each gen-increment
-  function initializeAlphaIndices() public whenNotPaused onlyOwner {
+  function initializeAlphaIndices()
+    public
+    whenNotPaused
+    onlyAllowedCallerOrOwner
+  {
     uint256 hashValue = uint256(
       keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp))
     );

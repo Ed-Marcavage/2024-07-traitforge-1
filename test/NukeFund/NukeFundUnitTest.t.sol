@@ -223,4 +223,22 @@ contract NukeFundTest is Test {
     vm.warp(block.timestamp + 10 days);
     assertTrue(nukeFund.canTokenBeNuked(tokenId));
   }
+
+  function test_FundsRoundWrong() public {
+    vm.startPrank(owner);
+    nukeFund.setTaxCut(5);
+    vm.stopPrank();
+    uint256 devShare = 0.05 ether;
+    uint256 initialDevBalance = nukeFund.devAddress().balance;
+    uint256 initialNukeFund = nukeFund.getFundBalance();
+    vm.prank(user1);
+
+    address(nukeFund).call{ value: 1 ether }('');
+    uint256 finalDevBalance = nukeFund.devAddress().balance;
+    uint256 devGained = finalDevBalance - initialDevBalance;
+    console.log('Dev Balance Gained:', devGained);
+    assertNotEq(address(nukeFund).balance, initialNukeFund + 0.95 ether);
+    uint256 devBalance = nukeFund.devAddress().balance;
+    assertNotEq(devBalance, initialDevBalance + devShare);
+  }
 }

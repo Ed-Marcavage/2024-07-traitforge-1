@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import 'forge-std/console.sol';
 
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -278,6 +279,11 @@ contract TraitForgeNft is
   }
 
   function _mintInternal(address to, uint256 mintPrice) internal {
+    // during bug, state:
+    // currentGeneration is 1
+    // generationMintCounts[1] is 10k
+    // generationMintCounts[2] is 1
+
     if (generationMintCounts[currentGeneration] >= maxTokensPerGen) {
       _incrementGeneration();
     }
@@ -343,6 +349,10 @@ contract TraitForgeNft is
   }
 
   function _incrementGeneration() private {
+    // during bug, state:
+    // currentGeneration is 1 - incremented to 2 below and set to 0
+    // generationMintCounts[1] is 10k
+    // generationMintCounts[2] is 1
     require(
       generationMintCounts[currentGeneration] >= maxTokensPerGen,
       'Generation limit not yet reached'
